@@ -26,7 +26,7 @@ namespace TiledSharp
         public TmxList<TmxObject> Objects {get; private set;}
         public PropertyDict Properties {get; private set;}
 
-        public TmxObjectGroup(XElement xObjectGroup)
+        public TmxObjectGroup(XElement xObjectGroup, Dictionary<string, TmxTypeDefaults> defaults = null)
         {
             Name = (string) xObjectGroup.Attribute("name") ?? String.Empty;
             Color = new TmxColor(xObjectGroup.Attribute("color"));
@@ -47,7 +47,7 @@ namespace TiledSharp
 
             Objects = new TmxList<TmxObject>();
             foreach (var e in xObjectGroup.Elements("object"))
-                Objects.Add(new TmxObject(e));
+                Objects.Add(new TmxObject(e, defaults));
 
             Properties = new PropertyDict(xObjectGroup.Element("properties"));
         }
@@ -73,7 +73,7 @@ namespace TiledSharp
         public Collection<TmxObjectPoint> Points {get; private set;}
         public PropertyDict Properties {get; private set;}
 
-        public TmxObject(XElement xObject)
+        public TmxObject(XElement xObject, Dictionary<string, TmxTypeDefaults> defaults = null)
         {
             Id = (int?)xObject.Attribute("id") ?? 0;
             Name = (string)xObject.Attribute("name") ?? String.Empty;
@@ -120,7 +120,10 @@ namespace TiledSharp
                 Text = new TmxText(xText);
             }
 
-            Properties = new PropertyDict(xObject.Element("properties"));
+            TmxTypeDefaults typeDefaults = null;
+            defaults.TryGetValue(Type, out typeDefaults);
+
+            Properties = new PropertyDict(xObject.Element("properties"), typeDefaults);
         }
 
         public Collection<TmxObjectPoint> ParsePoints(XElement xPoints)

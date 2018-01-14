@@ -32,8 +32,29 @@ namespace TiledSharp
         public TmxList<TmxGroup> Groups { get; private set; }
         public PropertyDict Properties {get; private set;}
 
-        public TmxMap(string filename)
+        public Dictionary<string, TmxTypeDefaults> DefaultValues = new Dictionary<string, TmxTypeDefaults>();
+
+        public TmxMap(string filename, string objectTypeFile)
         {
+            if (objectTypeFile != null)
+            {
+                XDocument xTypesDoc = ReadXml(objectTypeFile);
+                var xObjectTypes = xTypesDoc.Element("objecttypes");
+                foreach (var ot in xObjectTypes.Elements("objecttype"))
+                {
+                    string typeName = ot.Attribute("name").Value;
+
+                    TmxTypeDefaults defaults = new TmxTypeDefaults();
+                    DefaultValues.Add(typeName, defaults);
+                    foreach (var op in ot.Elements("property"))
+                    {
+                        string name = op.Attribute("name").Value;
+                        string value = op.Attribute("default")?.Value ?? "";
+                        defaults.Add(name, value);
+                    }
+                }
+            }
+
             Load(ReadXml(filename));
         }
 
@@ -119,7 +140,7 @@ namespace TiledSharp
 
             ObjectGroups = new TmxList<TmxObjectGroup>();
             foreach (var e in xMap.Elements("objectgroup"))
-                ObjectGroups.Add(new TmxObjectGroup(e));
+                ObjectGroups.Add(new TmxObjectGroup(e, DefaultValues));
 
             ImageLayers = new TmxList<TmxImageLayer>();
             foreach (var e in xMap.Elements("imagelayer"))
@@ -129,6 +150,10 @@ namespace TiledSharp
             foreach (var e in xMap.Elements("group"))
                 Groups.Add(new TmxGroup(e, Width, Height, TmxDirectory));
         }
+    }
+
+    public class TmxTypeDefaults : Dictionary<string, string>
+    {
     }
 
     public enum OrientationType

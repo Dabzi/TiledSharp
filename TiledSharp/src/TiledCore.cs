@@ -104,8 +104,20 @@ namespace TiledSharp
     [Serializable]
     public class PropertyDict : Dictionary<string, string>
     {
-        public PropertyDict(XContainer xmlProp)
+        public PropertyDict(XContainer xmlProp, TmxTypeDefaults defaults = null)
         {
+            if (defaults != null)
+            {
+                foreach (KeyValuePair<string, string> keyPair in defaults)
+                {
+                    //Fill default values for any keys that aren't present.
+                    if (!ContainsKey(keyPair.Key))
+                    {
+                        Add(keyPair.Key, keyPair.Value);
+                    }
+                }
+            }
+
             if (xmlProp == null) return;
 
             foreach (var p in xmlProp.Elements("property"))
