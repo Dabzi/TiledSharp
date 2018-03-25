@@ -142,20 +142,13 @@ namespace TiledSharp
         public Collection<TmxAnimationFrame> AnimationFrames {get; private set;}
 
         // Human-readable aliases to the Terrain markers
-        public TmxTerrain TopLeft {
-            get { return TerrainEdges[0]; }
-        }
+        public TmxTerrain TopLeft => TerrainEdges[0];
 
-        public TmxTerrain TopRight {
-            get { return TerrainEdges[1]; }
-        }
+        public TmxTerrain TopRight => TerrainEdges[1];
 
-        public TmxTerrain BottomLeft {
-            get { return TerrainEdges[2]; }
-        }
-        public TmxTerrain BottomRight {
-            get { return TerrainEdges[3]; }
-        }
+        public TmxTerrain BottomLeft => TerrainEdges[2];
+
+        public TmxTerrain BottomRight => TerrainEdges[3];
 
         public TmxTilesetTile(XElement xTile, TmxList<TmxTerrain> Terrains,
                        string tmxDir = "")
